@@ -1,11 +1,21 @@
 import { useState } from 'react'
 
 const Statistics = ({ good, neutral, bad }) => {
-   // As these values are derived solely from states, they don't need to be declared as states themselves
+  // As these values are derived solely from states, they don't need to be declared as states themselves
   const total = good + neutral + bad
-  const average = total === 0 ? 0 : (good - bad) / total
-  const positive = total === 0 ? 0 : good / total
 
+  if (total === 0) {
+    return (
+      <div>
+        <h1>Statistics</h1>
+        <p>No feedback given</p>
+      </div>
+    )
+  }
+
+  const average = (good - bad) / total
+  const positive = good / total
+  
   return (
     <div> 
       <h1>Statistics</h1>
