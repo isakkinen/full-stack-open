@@ -3,12 +3,14 @@ import { PersonForm } from './components/PersonForm'
 import { Filter } from './components/Filter'
 import { Persons } from './components/Persons'
 import personsService from './services/persons'
+import { Notification } from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   useEffect(() => {
     personsService.getAll().then(response => {
@@ -24,6 +26,7 @@ const App = () => {
       const person = persons.find(p => p.name === newName)
       const changedPerson = {...person, number: newNumber}
       personsService.update(person.id, changedPerson).then(response => {
+        setNotificationMessage(`Updated ${person.name}`)
         setPersons(persons.map(p => p.id !== person.id ? p : response))
         setNewName('')
         setNewNumber('')
@@ -32,6 +35,7 @@ const App = () => {
     }
 
     personsService.create({name: newName, number: newNumber}).then(response => {
+      setNotificationMessage(`Added ${response.name}`)
       setPersons(persons.concat(response))
       setNewName('')
       setNewNumber('')
@@ -42,6 +46,7 @@ const App = () => {
     console.log(person)
     if (window.confirm(`Delete ${person.name}?`)) {
       personsService.remove(person.id).then(response => {
+        setNotificationMessage(`Deleted ${person.name}`)
         setPersons(persons.filter(p => p.id !== person.id))
       })
     }
@@ -49,6 +54,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={notificationMessage} />
       <h2>Phonebook</h2>
       <Filter value={filter} handleChange={(event) => setFilter(event.target.value)}/>
       <h2>Add a new</h2>
