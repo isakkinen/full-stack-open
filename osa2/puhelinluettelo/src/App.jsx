@@ -12,6 +12,9 @@ const App = () => {
   const [filter, setFilter] = useState('')
   const [notificationMessage, setNotificationMessage] = useState(null)
 
+  const setErrorMessage = (message) => setNotificationMessage({text: message, isError: true})
+  const setSuccessMessage = (message) => setNotificationMessage({text: message, isError: false})
+
   useEffect(() => {
     personsService.getAll().then(response => {
       setPersons(response)
@@ -26,19 +29,24 @@ const App = () => {
       const person = persons.find(p => p.name === newName)
       const changedPerson = {...person, number: newNumber}
       personsService.update(person.id, changedPerson).then(response => {
-        setNotificationMessage(`Updated ${person.name}`)
+        setSuccessMessage(`Updated ${person.name}`)
         setPersons(persons.map(p => p.id !== person.id ? p : response))
         setNewName('')
         setNewNumber('')
+      }).catch(error => {
+        setErrorMessage(`Information of ${person.name} has already been removed from server`)
+        setPersons(persons.filter(p => p.id !== person.id))
       })
       return
     }
 
     personsService.create({name: newName, number: newNumber}).then(response => {
-      setNotificationMessage(`Added ${response.name}`)
+      setSuccessMessage(`Added ${response.name}`)
       setPersons(persons.concat(response))
       setNewName('')
       setNewNumber('')
+    }).catch(error => {
+      setErrorMessage(`Failed to add person ${name}: ${error.response.data.error}`)
     })
   }
 
@@ -46,7 +54,10 @@ const App = () => {
     console.log(person)
     if (window.confirm(`Delete ${person.name}?`)) {
       personsService.remove(person.id).then(response => {
-        setNotificationMessage(`Deleted ${person.name}`)
+        setSuccessMessage(`Deleted ${person.name}`)
+        setPersons(persons.filter(p => p.id !== person.id))
+      }).catch(error => {
+        setErrorMessage(`Information of ${person.name} has already been removed from server`)
         setPersons(persons.filter(p => p.id !== person.id))
       })
     }

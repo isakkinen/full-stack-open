@@ -1,9 +1,9 @@
 
 export const Notification = ({message}) => {    
-    if (message == null) return <div></div>
+    if (message === null) return <></>
 
     const style = {
-        color: 'green',
+        color: message.isError ? 'red' : 'green',
         fontSize: 20,
         borderStyle: 'solid',
         borderRadius: 5,
@@ -13,7 +13,7 @@ export const Notification = ({message}) => {
 
     return (
         <div style={style}>
-            {message}
+            {message.text}
         </div>
     )
 } 
