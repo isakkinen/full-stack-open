@@ -16,10 +16,18 @@ const App = () => {
     })
   }, [])
 
-  const addPerson = (event) => {
+  const addOrUpdatePerson = (event) => {
     event.preventDefault()
     if (persons.some(person => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
+      if(!window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) return;
+    
+      const person = persons.find(p => p.name === newName)
+      const changedPerson = {...person, number: newNumber}
+      personsService.update(person.id, changedPerson).then(response => {
+        setPersons(persons.map(p => p.id !== person.id ? p : response))
+        setNewName('')
+        setNewNumber('')
+      })
       return
     }
 
@@ -44,7 +52,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <Filter value={filter} handleChange={(event) => setFilter(event.target.value)}/>
       <h2>Add a new</h2>
-      <PersonForm addPerson={addPerson} newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber}/>
+      <PersonForm addPerson={addOrUpdatePerson} newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber}/>
       <h2>Numbers</h2>
       <Persons persons={persons} filter={filter} handleRemove={removePerson}/>
     </div>
