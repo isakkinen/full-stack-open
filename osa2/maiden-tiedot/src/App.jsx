@@ -12,11 +12,15 @@ function App() {
     })
   }, [])
 
+  const selectCountry = (country) => {
+    setCountry(country)
+  }
+
   const filteredCountries = countries.filter(country2 => country2.name.common.toLowerCase().includes(country.toLowerCase()))
   return (
     <div>
       find countries <input value={country} onChange={(event) => setCountry(event.target.value)}></input>
-      <Countries countries={filteredCountries}/>
+      <Countries countries={filteredCountries} handleSelectCountry={selectCountry}/>
     </div>
   )
 }
